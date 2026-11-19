@@ -319,14 +319,16 @@ html{overflow-x:hidden}body{overflow-x:clip}
 <!-- ============ PELAJAR ============ -->
 <section class="view" id="v-pel">
   <nav class="nav" id="nav-pel">
-    <button data-s="pborang" class="on" onclick="goP('pborang')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3h9l4 4v14H6zM9 12l2 2 4-4"/></svg>Borang</button>
+    <button data-s="pstatus" class="on" onclick="goP('pstatus')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Utama</button>
+    <button data-s="pprofil" onclick="goP('pprofil')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profil</button>
+    <button data-s="pborang" onclick="goP('pborang')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3h9l4 4v14H6zM9 12l2 2 4-4"/></svg>Borang</button>
     <button data-s="prefleksi" onclick="goP('prefleksi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20l4-1 11-11-3-3L5 16zM14 6l3 3"/></svg>Refleksi</button>
-    <button data-s="pstatus" onclick="goP('pstatus')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>Status</button>
   </nav>
   <main>
-    <div class="screen on" id="s-pborang"></div>
+    <div class="screen on" id="s-pstatus"></div>
+    <div class="screen" id="s-pprofil"></div>
+    <div class="screen" id="s-pborang"></div>
     <div class="screen" id="s-prefleksi"></div>
-    <div class="screen" id="s-pstatus"></div>
   </main>
 </section>
 
@@ -361,7 +363,7 @@ var GAS_URL = "https://script.google.com/macros/s/AKfycbwA93jJVBFkIYyXDlOLwirgF3
 // Logo (kepala aplikasi, skrin log masuk & semua cetakan). Fail Drive mesti dikongsi "Anyone with the link".
 // Alternatif paling stabil: muat naik fail logo ke repo GitHub, kemudian tukar kepada "logo.png"
 // Mesti sama dengan API_VERSI dalam Code.gs
-var API_VERSI = 3;
+var API_VERSI = 4;
 // Aplikasi e-RAMS penuh (ruangan admin/pensyarah sahaja)
 var ERAMS_URL = "https://unitkokurikulumipgkda.github.io/e-RAMS/";
 // Maklumat Borang C1 (Akuan Lepas Tanggung) yang dipaparkan kepada pelajar
@@ -509,7 +511,7 @@ function startSession(role, token, user){
     $("v-staf").classList.add("on"); go("utama"); fetchStudents();
   } else {
     $("who").textContent = (user.Nama_Pelajar || "") + " · Pelajar";
-    $("v-pel").classList.add("on"); fetchMine();
+    $("v-pel").classList.add("on"); goP("pstatus"); fetchMine();
   }
 }
 function endSession(){
@@ -970,9 +972,9 @@ function goP(name){
   if (S.detail) renderMine(); window.scrollTo(0, 0);
 }
 function fetchMine(){
-  ["s-pborang","s-prefleksi","s-pstatus"].forEach(function(id){ $(id).innerHTML = skel(4); });
+  ["s-pborang","s-prefleksi","s-pstatus","s-pprofil"].forEach(function(id){ $(id).innerHTML = skel(4); });
   api("getStudentDetail", {}).then(function(d){ S.detail = d; renderMine(); })
-    .catch(function(e){ ["s-pborang","s-prefleksi","s-pstatus"].forEach(function(id){ $(id).innerHTML = errBox(e.message, "fetchMine()"); }); });
+    .catch(function(e){ ["s-pborang","s-prefleksi","s-pstatus","s-pprofil"].forEach(function(id){ $(id).innerHTML = errBox(e.message, "fetchMine()"); }); });
 }
 function renderMine(){
   var d = S.detail, p = d.pelajar, b = d.borang;
@@ -980,7 +982,7 @@ function renderMine(){
   var u = imgUrl((b && b.URL_Gambar) || p.URL_Gambar), j = parseB1(b) || {};
   var x = "<h2 class='title'>Borang Kesihatan & Lepas Tanggung</h2>";
   x += b && parseB1(b) ? "<div class='note ok'>Borang telah dihantar pada " + h(fmtDate(b.Tarikh_Isi)) + ". Anda boleh kemas kini bila-bila masa.</div>" : "<div class='note'>Borang B1 dan C1 WAJIB diisi sebelum menyertai aktiviti Program BIG.</div>";
-  x += "<div class='card'><h3>Maklumat diri</h3><dl class='info'><dt>Nama</dt><dd>" + h(p.Nama_Pelajar) + "</dd><dt>No KP</dt><dd>" + h(p.No_KP) + "</dd><dt>Kelas</dt><dd>" + h(p.Kelas || "-") + "</dd><dt>Siri / Kumpulan</dt><dd>" + h(p.Siri || "-") + " / " + h(p.Kumpulan || "-") + "</dd></dl></div>";
+  x += "<div class='card'><div style='display:flex;align-items:center;gap:8px'><h3 style='flex:1'>Maklumat diri</h3><button type='button' class='link' onclick=\"goP('pprofil')\">Kemas kini ›</button></div><dl class='info'><dt>Nama</dt><dd>" + h(p.Nama_Pelajar) + "</dd><dt>No KP</dt><dd>" + h(p.No_KP) + "</dd><dt>Kelas</dt><dd>" + h(p.Kelas || "-") + "</dd><dt>Siri / Kumpulan</dt><dd>" + h(p.Siri || "-") + " / " + h(p.Kumpulan || "-") + "</dd><dt>Jawatan</dt><dd>" + h(p.Jawatan || "-") + "</dd></dl></div>";
   x += "<form onsubmit='return saveBorang(event)'>";
   // B1
   x += "<div class='card'><h3>B1 &middot; Akuan Status Kesihatan</h3><ul class='small muted' style='margin:0 0 12px 18px'><li>Tandakan YA atau TIDAK bagi setiap soalan dengan jujur.</li><li>Jika YA, nyatakan butiran dalam ruang catatan.</li><li>Peserta yang mempunyai penyakit kronik perlu mendapatkan kelulusan doktor terlebih dahulu.</li><li>Maklumat ini SULIT dan hanya digunakan untuk tujuan keselamatan peserta.</li></ul><div class='b1' id='b1-box' onchange='b1Toggle(event)'>";
@@ -1010,23 +1012,63 @@ function renderMine(){
   $("s-prefleksi").innerHTML = "<h2 class='title'>Refleksi Saya</h2><div class='card'>" + refleksiForm(d.refleksi, "saveRefleksiPel(this)") + "</div>";
   // Status: senarai tindakan pelajar sahaja (tiada markah / keputusan)
   var bOk = !!(b && parseB1(b)), rOk = !!(d.refleksi && (d.refleksi.Refleksi_1 || d.refleksi.Refleksi_2 || d.refleksi.Refleksi_3 || d.refleksi.URL_PDF));
+  var kosong = profilKosong(p), pOk = !kosong.length;
+  $("s-pprofil").innerHTML = profilForm(p, kosong);
   var todo = [
+    { ok: pOk, t: "Maklumat diri (Siri, Kumpulan, Jawatan)", go: "pprofil", siap: pOk ? "Lengkap" : "", btn: pOk ? "Kemas kini" : "Lengkapkan", belum: "Belum diisi: " + kosong.join(", ") },
     { ok: bOk, t: "Borang B1 (Akuan Kesihatan) & C1 (Lepas Tanggung)", go: "pborang", siap: bOk ? "Dihantar " + fmtDate(b.Tarikh_Isi) : "", btn: bOk ? "Kemas kini" : "Isi sekarang" },
     { ok: rOk, t: "Refleksi", go: "prefleksi", siap: rOk ? (d.refleksi.URL_PDF ? "Ditaip / PDF dimuat naik" : "Disimpan " + fmtDate(d.refleksi.Tarikh)) : "", btn: rOk ? "Kemas kini" : "Isi sekarang" }
   ];
   var baki = todo.filter(function(x){ return !x.ok; }).length;
-  var st = "<h2 class='title'>Status Saya</h2>";
+  var st = "<h2 class='title'>Selamat datang, " + h(String(p.Nama_Pelajar || "").split(" ")[0]) + "</h2>";
   st += baki ? "<div class='note'><b>" + baki + " tindakan perlu diambil.</b> Sila lengkapkan sebelum program bermula.</div>" : "<div class='note ok'><b>✓ Semua tindakan telah dilengkapkan.</b> Terima kasih.</div>";
   st += "<div class='card'>" + todo.map(function(x){
     return "<div style='display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)'>" +
       "<div style='width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;font-weight:800;" + (x.ok ? "background:var(--ok-soft);color:var(--ok)'>✓" : "background:var(--bad-soft);color:var(--bad)'>!") + "</div>" +
-      "<div style='flex:1;min-width:0'><b>" + h(x.t) + "</b><div class='small' style='color:" + (x.ok ? "var(--ok)" : "var(--bad)") + "'>" + (x.ok ? h(x.siap) : "Belum dilengkapkan") + "</div></div>" +
+      "<div style='flex:1;min-width:0'><b>" + h(x.t) + "</b><div class='small' style='color:" + (x.ok ? "var(--ok)" : "var(--bad)") + "'>" + (x.ok ? h(x.siap) : h(x.belum || "Belum dilengkapkan")) + "</div></div>" +
       "<button class='btn" + (x.ok ? "" : " pri") + "' style='min-height:40px' onclick=\"goP('" + x.go + "')\">" + x.btn + "</button></div>";
   }).join("") + "</div>";
   st += "<p class='small muted' style='margin:4px 2px 12px'>Markah dan keputusan pentaksiran akan dimaklumkan oleh pensyarah.</p>";
   st += "<button class='btn block' onclick='fetchMine()'>Muat semula</button>";
   $("s-pstatus").innerHTML = st;
 }
+// ---------- Profil pelajar ----------
+var JAWATAN_CADANGAN = ["Ketua Kumpulan","Penolong Ketua","Setiausaha","Bendahari","AJK Kebersihan","AJK Keselamatan","AJK Makanan","AJK Peralatan","Ahli"];
+var PROFIL_WAJIB = [["Jantina","Jantina"],["Siri","Siri"],["Kumpulan","Kumpulan"],["Jawatan","Jawatan"]];
+function profilKosong(p){ return PROFIL_WAJIB.filter(function(f){ return !String(p[f[0]] || "").trim(); }).map(function(f){ return f[1]; }); }
+function profilForm(p, kosong){
+  var inp = function(id, label, val, wajib, extra){ return "<label class='f'><span>" + label + (wajib ? " *" : "") + "</span><input type='text' id='pf-" + id + "' value='" + h(val) + "'" + (wajib ? " required" : "") + (extra || "") + "></label>"; };
+  var x = "<h2 class='title'>Profil Saya</h2>";
+  x += kosong.length ? "<div class='note'>Sila lengkapkan: <b>" + h(kosong.join(", ")) + "</b>.</div>" : "<div class='note ok'>Maklumat diri lengkap. Anda boleh kemas kini jika ada perubahan.</div>";
+  x += "<div class='card'><h3>Maklumat rasmi</h3><dl class='info'><dt>Nama</dt><dd>" + h(p.Nama_Pelajar) + "</dd><dt>No KP</dt><dd>" + h(p.No_KP) + "</dd></dl><p class='small muted' style='margin-top:8px'>Jika nama atau No KP salah, sila hubungi pensyarah.</p></div>";
+  x += "<form class='card' onsubmit='return saveProfil(event)'><h3>Kumpulan & program</h3><div class='row2'>";
+  x += inp("siri", "Siri", p.Siri, 1, " placeholder='Contoh: 1'");
+  x += inp("kumpulan", "Kumpulan", p.Kumpulan, 1, " placeholder='Contoh: A1'");
+  x += inp("jawatan", "Jawatan dalam kumpulan", p.Jawatan, 1, " list='jawatan-list' placeholder='Pilih atau taip'");
+  x += inp("noKumpulan", "No dalam kumpulan", p.No_Dalam_Kumpulan, 0, " inputmode='numeric'");
+  x += "</div><datalist id='jawatan-list'>" + JAWATAN_CADANGAN.map(function(j){ return "<option value='" + h(j) + "'>"; }).join("") + "</datalist>";
+  x += "<h3 style='margin-top:6px'>Maklumat diri</h3><div class='row2'>";
+  x += "<label class='f'><span>Jantina *</span><select id='pf-jantina' required><option value=''>Pilih</option><option" + (p.Jantina === "Lelaki" ? " selected" : "") + ">Lelaki</option><option" + (p.Jantina === "Perempuan" ? " selected" : "") + ">Perempuan</option></select></label>";
+  x += inp("kelas", "Kelas / Program", p.Kelas, 0);
+  x += inp("giliran", "Angka giliran", p.A_Giliran, 0);
+  x += inp("telKecemasan", "No tel kecemasan (waris)", p.No_Tel_Kecemasan, 0, " type='tel' inputmode='tel'").replace("type='text' ", "");
+  x += "</div>";
+  x += inp("alahan", "Alahan / masalah kesihatan", p.Alahan_Malah_Kesihatan, 0, " placeholder='Tiada'");
+  x += inp("ubat", "Ubat-ubatan", p.Ubat_Ubatan, 0, " placeholder='Tiada'");
+  x += "<button class='btn pri block' id='pf-save' type='submit'>Simpan Profil</button></form>";
+  return x;
+}
+function saveProfil(e){
+  e.preventDefault();
+  var f = {}; ["siri","kumpulan","jawatan","noKumpulan","jantina","kelas","giliran","telKecemasan","alahan","ubat"].forEach(function(k){ f[k] = $("pf-" + k).value.trim(); });
+  var btn = $("pf-save"); busy(btn, true);
+  api("updateMyProfile", { profil:f }).then(function(d){
+    S.detail = d; S.user = d.pelajar; store("big-sesi", { token:S.token, role:S.role, user:S.user });
+    toast("Profil disimpan ✓"); renderMine();
+  }).catch(function(err){ toast(err.message, true); busy(btn, false); });
+  return false;
+}
+
 // Papar ruang catatan apabila YA dipilih
 function b1Toggle(e){
   var t = e.target; if (t.type !== "radio") return;
