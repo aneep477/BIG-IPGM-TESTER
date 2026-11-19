@@ -326,6 +326,8 @@ html,body{overflow-x:hidden}
 // ===================== KONFIGURASI =====================
 var GAS_URL = "https://script.google.com/macros/s/AKfycbwA93jJVBFkIYyXDlOLwirgF3GpfeUdy8ts-MGsxPJcTjWQOx-6RrTgCd7N35CT2oprIQ/exec";
 // Logo pada semua cetakan. Disyorkan: muat naik fail logo ke repo GitHub, kemudian tukar kepada "logo-ipg.jpg"
+// Mesti sama dengan API_VERSI dalam Code.gs
+var API_VERSI = 3;
 // Aplikasi e-RAMS penuh (ruangan admin/pensyarah sahaja)
 var ERAMS_URL = "https://unitkokurikulumipgkda.github.io/e-RAMS/";
 // Maklumat Borang C1 (Akuan Lepas Tanggung) yang dipaparkan kepada pelajar
@@ -383,7 +385,7 @@ function api(action, data, timeoutMs){
   data = data || {};
   if (!/^https:\/\/script\.google\.com\//.test(GAS_URL)) return Promise.reject(new Error("GAS_URL belum ditetapkan dalam index.html."));
   var body = {}; for (var k in data) body[k] = data[k];
-  body.action = action; body.token = S.token;
+  body.action = action; body.token = S.token; body.v = API_VERSI;
   var ctl = new AbortController(), timer = setTimeout(function(){ ctl.abort(); }, timeoutMs || 30000);
   return fetch(GAS_URL, { method:"POST", body:JSON.stringify(body), signal:ctl.signal, redirect:"follow" })
     .catch(function(e){ throw new Error(e.name === "AbortError" ? "Pelayan lambat bertindak balas. Sila cuba lagi." : "Tiada sambungan internet atau pelayan tidak dapat dicapai."); })
@@ -391,6 +393,7 @@ function api(action, data, timeoutMs){
     .then(function(j){
       if (!j.success) {
         if (j.code === "AUTH" && action !== "logout") { endSession(); toast(j.error, true); }
+        if (j.code === "VERSI") showUpdateBanner(j.error);
         var err = new Error(j.error || "Ralat tidak diketahui."); err.code = j.code; throw err;
       }
       return j.data;
@@ -398,6 +401,13 @@ function api(action, data, timeoutMs){
     .finally(function(){ clearTimeout(timer); });
 }
 
+function showUpdateBanner(msg){
+  if ($("upd")) return;
+  var d = document.createElement("div"); d.id = "upd";
+  d.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:200;background:var(--accent);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;gap:12px;align-items:center;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.2)";
+  d.innerHTML = "<div style='flex:1'>" + h(msg) + "</div><button class='btn' style='color:#1d2420;background:#fff;flex-shrink:0' onclick='location.reload()'>Muat semula</button>";
+  document.body.appendChild(d);
+}
 function busy(btn, on, label){
   if (!btn) return;
   if (on) { btn.dataset.label = btn.innerHTML; btn.disabled = true; btn.innerHTML = label || "Menyimpan…"; }
@@ -964,12 +974,22 @@ function renderMine(){
   $("s-pborang").innerHTML = x;
   // Refleksi
   $("s-prefleksi").innerHTML = "<h2 class='title'>Refleksi Saya</h2><div class='card'>" + refleksiForm(d.refleksi, "saveRefleksiPel(this)") + "</div>";
-  // Status
-  var o = d.overall, row = function(l, sc){ return "<div style='margin-bottom:14px'><div style='display:flex;justify-content:space-between'><b>" + l + "</b><span>" + (sc ? sc.total + "/" + sc.max + " · " + sc.percent + "%" : "<span class='muted'>Belum dinilai</span>") + "</span></div><div class='bar'><i style='width:" + (sc ? sc.percent : 0) + "%'></i></div></div>"; };
-  var st = "<h2 class='title'>Status Saya</h2><div class='card' style='text-align:center'><div class='muted small'>Keputusan keseluruhan</div><div style='font-size:44px;font-weight:800;line-height:1.2'>" + (o ? o.percent + "%" : "—") + "</div><span class='badge " + h(d.status) + "' style='font-size:14px'>" + h(d.status) + "</span></div>";
-  st += "<div class='card'>" + row("Perkhemahan (70%)", o && o.perkhemahan) + row("Jalinan Bakti (30%)", o && o.jalinan) + "</div>";
-  st += "<div class='card'><dl class='info'><dt>Borang B1 & C1</dt><dd>" + (b ? "<span style='color:var(--ok)'>✓ Diisi</span>" : "<span style='color:var(--bad)'>Belum diisi</span>") + "</dd><dt>Refleksi</dt><dd>" + (d.refleksi ? "<span style='color:var(--ok)'>✓ Diisi</span>" : "<span style='color:var(--bad)'>Belum diisi</span>") + "</dd></dl></div>";
-  st += "<div class='card'><h3>Refleksi</h3>" + refleksiView(d.refleksi) + "</div>";
+  // Status: senarai tindakan pelajar sahaja (tiada markah / keputusan)
+  var bOk = !!(b && parseB1(b)), rOk = !!(d.refleksi && (d.refleksi.Refleksi_1 || d.refleksi.Refleksi_2 || d.refleksi.Refleksi_3 || d.refleksi.URL_PDF));
+  var todo = [
+    { ok: bOk, t: "Borang B1 (Akuan Kesihatan) & C1 (Lepas Tanggung)", go: "pborang", siap: bOk ? "Dihantar " + fmtDate(b.Tarikh_Isi) : "", btn: bOk ? "Kemas kini" : "Isi sekarang" },
+    { ok: rOk, t: "Refleksi", go: "prefleksi", siap: rOk ? (d.refleksi.URL_PDF ? "Ditaip / PDF dimuat naik" : "Disimpan " + fmtDate(d.refleksi.Tarikh)) : "", btn: rOk ? "Kemas kini" : "Isi sekarang" }
+  ];
+  var baki = todo.filter(function(x){ return !x.ok; }).length;
+  var st = "<h2 class='title'>Status Saya</h2>";
+  st += baki ? "<div class='note'><b>" + baki + " tindakan perlu diambil.</b> Sila lengkapkan sebelum program bermula.</div>" : "<div class='note ok'><b>✓ Semua tindakan telah dilengkapkan.</b> Terima kasih.</div>";
+  st += "<div class='card'>" + todo.map(function(x){
+    return "<div style='display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)'>" +
+      "<div style='width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;font-weight:800;" + (x.ok ? "background:var(--ok-soft);color:var(--ok)'>✓" : "background:var(--bad-soft);color:var(--bad)'>!") + "</div>" +
+      "<div style='flex:1;min-width:0'><b>" + h(x.t) + "</b><div class='small' style='color:" + (x.ok ? "var(--ok)" : "var(--bad)") + "'>" + (x.ok ? h(x.siap) : "Belum dilengkapkan") + "</div></div>" +
+      "<button class='btn" + (x.ok ? "" : " pri") + "' style='min-height:40px' onclick=\"goP('" + x.go + "')\">" + x.btn + "</button></div>";
+  }).join("") + "</div>";
+  st += "<p class='small muted' style='margin:4px 2px 12px'>Markah dan keputusan pentaksiran akan dimaklumkan oleh pensyarah.</p>";
   st += "<button class='btn block' onclick='fetchMine()'>Muat semula</button>";
   $("s-pstatus").innerHTML = st;
 }
