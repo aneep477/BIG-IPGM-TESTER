@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1f5f4a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Pentaksiran BIG 2026</title>
+<title>Pentaksiran BIG 2027</title>
 <style>
 :root{
   --bg:#f4f2ec;--surface:#fff;--surface-2:#efede6;--text:#1d2420;--muted:#5d6a63;--line:#e0ddd3;
@@ -172,6 +172,7 @@ dl.info dd{word-break:break-word}
   .tbl td{border:0;padding:0}
   .tbl td.c-nm{font-weight:650}
   .tbl td.c-st{grid-row:1/3;grid-column:2;align-self:center}
+  .tbl td.c-act{grid-column:2;grid-row:3/6;align-self:end;text-align:right}
   .tbl td.c-sub{font-size:12px;color:var(--muted);grid-column:1}
   .tbl td.hide-m{display:none}
 }
@@ -200,6 +201,23 @@ dl.info dd{word-break:break-word}
 .toast.show{opacity:1}
 .toast.bad{background:var(--bad);color:#fff}
 .photo{width:120px;height:120px;border-radius:16px;object-fit:cover;background:var(--surface-2);display:block}
+/* B1 / C1 */
+.b1{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:12px;background:var(--surface)}
+.b1h{background:var(--primary);color:var(--primary-ink);font-size:12px;font-weight:700;padding:9px 12px;letter-spacing:.3px}
+.b1q{padding:10px 12px;border-top:1px solid var(--line)}
+.b1q .t{font-size:14px;margin-bottom:8px}
+.yt{display:flex;gap:6px}
+.yt label{flex:1;max-width:120px;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;border:1.5px solid var(--line);border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;color:var(--muted)}
+.yt input{position:absolute;opacity:0;pointer-events:none}
+.yt label.ya:has(input:checked){background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.yt label.td:has(input:checked){background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.b1q input.cat{margin-top:8px}
+.legal{font-size:14px;line-height:1.75;text-align:justify}
+.legal p{margin-bottom:10px}
+.legal u{font-weight:700;text-decoration:none;border-bottom:1px solid currentColor}
+.dot.warn{background:var(--bad-soft);color:var(--bad)}
+.erams{width:100%;height:calc(100dvh - 210px - env(safe-area-inset-bottom));border:1px solid var(--line);border-radius:var(--r);background:#fff}
+@media (min-width:960px){.erams{height:calc(100dvh - 150px)}}
 .upload{display:flex;gap:14px;align-items:center}.upload>div{min-width:0;flex:1}.upload input[type=file]{max-width:100%;font-size:13px}
 html,body{overflow-x:hidden}
 </style>
@@ -250,6 +268,7 @@ html,body{overflow-x:hidden}
     <button data-s="pelajar" onclick="go('pelajar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-5.5"/></svg>Pelajar</button>
     <button data-s="laporan" onclick="go('laporan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Laporan</button>
     <button data-s="rubrik" onclick="go('rubrik')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h12l4 4v12H4zM8 10h8M8 14h8M8 18h5"/></svg>Rubrik</button>
+    <button data-s="erams" onclick="go('erams')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>e-RAMS</button>
   </nav>
   <main>
     <div class="screen on" id="s-utama"></div>
@@ -260,7 +279,7 @@ html,body{overflow-x:hidden}
         <select id="f-siri" onchange="renderAll()"><option value="">Semua siri</option></select>
         <select id="f-tind" onchange="renderPelajar()">
           <option value="">Semua</option><option value="noP">Belum nilai Perkhemahan</option><option value="noJ">Belum nilai Jalinan</option>
-          <option value="noB">Belum isi borang</option><option value="Lulus">Lulus</option><option value="Gagal">Gagal</option>
+          <option value="noB">Belum isi B1/C1</option><option value="b1Ya">Ada isu kesihatan (B1)</option><option value="Lulus">Lulus</option><option value="Gagal">Gagal</option>
         </select>
       </div>
       <div id="list-pelajar"></div>
@@ -268,6 +287,10 @@ html,body{overflow-x:hidden}
     </div>
     <div class="screen" id="s-laporan"></div>
     <div class="screen" id="s-rubrik"><h2 class="title">Rubrik</h2><div id="rubrik-body"></div></div>
+    <div class="screen" id="s-erams">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap"><h2 class="title" style="margin:0;flex:1">e-RAMS</h2><a class="btn" id="erams-open" target="_blank" rel="noopener">Buka di tab baharu ↗</a></div>
+      <iframe class="erams" id="erams-frame" title="e-RAMS" loading="lazy"></iframe>
+    </div>
   </main>
 </section>
 
@@ -302,6 +325,14 @@ html,body{overflow-x:hidden}
 <script>
 // ===================== KONFIGURASI =====================
 var GAS_URL = "https://script.google.com/macros/s/AKfycbwA93jJVBFkIYyXDlOLwirgF3GpfeUdy8ts-MGsxPJcTjWQOx-6RrTgCd7N35CT2oprIQ/exec";
+// Logo pada semua cetakan. Disyorkan: muat naik fail logo ke repo GitHub, kemudian tukar kepada "logo-ipg.jpg"
+// Aplikasi e-RAMS penuh (ruangan admin/pensyarah sahaja)
+var ERAMS_URL = "https://unitkokurikulumipgkda.github.io/e-RAMS/";
+// Maklumat Borang C1 (Akuan Lepas Tanggung) yang dipaparkan kepada pelajar
+var C1_PROGRAM = "PROGRAM BINA INSAN GURU (BIG) 2026";
+var C1_TARIKH = "";   // contoh: "10 - 12 Oktober 2026" (kosong = pelajar isi sendiri)
+var C1_INSTITUSI = "IPG KAMPUS DARULAMAN";
+var LOGO_URL = "https://ipgm.moe.edu.my/images/logo%20ipg%20dan%20bendera/keterangan-logo-IPG.jpg";
 
 var IPGK = ["IPG Kampus Bahasa Antarabangsa","IPG Kampus Bahasa Melayu","IPG Kampus Dato Razali Ismail","IPG Kampus Gaya","IPG Kampus Ilmu Khas","IPG Kampus Ipoh","IPG Kampus Kent","IPG Kampus Kuantan","IPG Kampus Lembah Pantai","IPG Kampus Pendidikan Islam","IPG Kampus Pendidikan Teknik","IPG Kampus Perempuan Melayu","IPG Kampus Perlis","IPG Kampus Raja Melewar","IPG Kampus Sandakan","IPG Kampus Sarawak","IPG Kampus Sultan Abdul Halim","IPG Kampus Sultan Idris","IPG Kampus Sultan Mizan","IPG Kampus Tawau","IPG Kampus Temenggong Ibrahim","IPG Kampus Tengku Ampuan Afzan","IPG Kampus Tuanku Bainun","IPG Kampus Tun Hussein Onn","IPG Kampus Mersing"];
 var P_ASPEK = [
@@ -455,6 +486,7 @@ function go(name){
   document.querySelectorAll("#v-staf .screen").forEach(function(s){ s.classList.toggle("on", s.id === "s-" + name); });
   document.querySelectorAll("#nav-staf button").forEach(function(b){ b.classList.toggle("on", b.dataset.s === name); });
   if (name === "rubrik") renderRubrik($("rubrik-body"));
+  if (name === "erams" && !$("erams-frame").src) { $("erams-frame").src = ERAMS_URL; $("erams-open").href = ERAMS_URL; }
   window.scrollTo(0, 0);
 }
 
@@ -498,7 +530,7 @@ function renderUtama(){
   html += stat(n, "Jumlah pelajar");
   html += stat(dP + "<span class='small muted'>/" + n + "</span>", "Dinilai Perkhemahan", pc(dP));
   html += stat(dJ + "<span class='small muted'>/" + n + "</span>", "Dinilai Jalinan", pc(dJ));
-  html += stat(dB + "<span class='small muted'>/" + n + "</span>", "Borang pelepasan diisi", pc(dB));
+  html += stat(dB + "<span class='small muted'>/" + n + "</span>", "Borang B1 & C1 diisi", pc(dB));
   html += stat("<span style='color:var(--ok)'>" + lulus + "</span>", "Lulus");
   html += stat("<span style='color:var(--bad)'>" + gagal + "</span>", "Gagal");
   html += stat(n - lulus - gagal, "Belum dinilai");
@@ -507,7 +539,9 @@ function renderUtama(){
   var todo = [];
   if (n - dP) todo.push(["noP", (n - dP) + " pelajar belum dinilai Perkhemahan"]);
   if (n - dJ) todo.push(["noJ", (n - dJ) + " pelajar belum dinilai Jalinan"]);
-  if (n - dB) todo.push(["noB", (n - dB) + " pelajar belum isi borang pelepasan"]);
+  if (n - dB) todo.push(["noB", (n - dB) + " pelajar belum isi Borang B1 & C1"]);
+  var nYa = c(function(s){ return s.b1Ya > 0; });
+  if (nYa) todo.push(["b1Ya", "⚠ " + nYa + " pelajar menjawab YA dalam Akuan Kesihatan (B1)"]);
   html += "<div class='card' style='margin-top:12px'><h3>Perlu tindakan</h3>";
   html += todo.length ? todo.map(function(t){ return "<button class='item' style='margin-bottom:6px' onclick=\"$('f-tind').value='" + t[0] + "';go('pelajar');renderPelajar()\"><div class='meta'>" + h(t[1]) + "</div><span class='muted'>›</span></button>"; }).join("") : "<div class='muted'>Semua pelajar telah dinilai. 🎉</div>";
   html += "</div>";
@@ -521,7 +555,7 @@ function renderPelajar(){
   var q = $("q").value.trim().toLowerCase(), t = $("f-tind").value;
   var L = bySiri().filter(function(s){
     if (q && (s.Nama_Pelajar + " " + s.No_KP + " " + s.Kumpulan + " " + s.Kelas).toLowerCase().indexOf(q) === -1) return false;
-    if (t === "noP") return !s.hasP; if (t === "noJ") return !s.hasJ; if (t === "noB") return !s.hasB;
+    if (t === "noP") return !s.hasP; if (t === "noJ") return !s.hasJ; if (t === "noB") return !s.hasB; if (t === "b1Ya") return s.b1Ya > 0;
     if (t) return s.status === t;
     return true;
   });
@@ -532,7 +566,7 @@ function renderPelajar(){
     var d = function(on, l){ return "<span class='dot" + (on ? " y" : "") + "'>" + l + "</span>"; };
     return "<button class='item' onclick=\"openDetail('" + h(s.No_KP) + "')\">" + avatar(s) +
       "<div class='meta'><div class='nm'>" + h(s.Nama_Pelajar) + "</div><div class='sub'>" + h(s.No_KP) + (s.Kumpulan ? " · Kump " + h(s.Kumpulan) : "") + (s.Siri ? " · Siri " + h(s.Siri) : "") + "</div>" +
-      "<div class='dots'>" + d(s.hasP, "Perkh") + d(s.hasJ, "Jalin") + d(s.hasR, "Refleksi") + d(s.hasB, "Borang") + "</div></div>" +
+      "<div class='dots'>" + d(s.hasP, "Perkh") + d(s.hasJ, "Jalin") + d(s.hasR, "Refleksi") + d(s.hasB, "B1/C1") + (s.b1Ya ? "<span class='dot warn'>⚠ Kesihatan " + s.b1Ya + "</span>" : "") + "</div></div>" +
       "<div><span class='badge " + h(s.status) + "'>" + h(s.status === "Belum Dinilai" ? "Belum" : s.status) + "</span>" + (s.overall != null ? "<div class='pct'>" + s.overall + "%</div>" : "") + "</div></button>";
   }).join("") + "</div>";
 }
@@ -548,12 +582,14 @@ function renderLaporan(){
   html += "<div class='toolbar'>" + siriSelect() + "<button class='btn pri' onclick='printReport()'>Cetak / PDF</button></div>";
   html += "<div class='chips'>" + chip("", "Semua") + chip("Lulus", "Lulus") + chip("Gagal", "Gagal") + chip("Belum Dinilai", "Belum") + "</div>";
   if (!L.length) { $("s-laporan").innerHTML = html + "<div class='state'>Tiada data.</div>"; return; }
-  html += "<div class='card' style='padding:8px 8px 0'><table class='tbl'><thead><tr><th>Nama</th><th class='hide-m'>No KP</th><th>Kump/Siri</th><th>Perkh</th><th>Jalin</th><th>Jumlah</th><th>Status</th></tr></thead><tbody>";
+  html += "<div class='card' style='padding:8px 8px 0'><table class='tbl'><thead><tr><th>Nama</th><th class='hide-m'>No KP</th><th>Kump/Siri</th><th>Perkh</th><th>Jalin</th><th>Jumlah</th><th>Status</th><th class='hide-m'>Refleksi</th><th></th></tr></thead><tbody>";
   L.forEach(function(s){
     html += "<tr class='click' onclick=\"openDetail('" + h(s.No_KP) + "')\"><td class='c-nm'>" + h(s.Nama_Pelajar) + "</td><td class='hide-m'>" + h(s.No_KP) + "</td>" +
       "<td class='c-sub'>" + h(s.Kumpulan || "-") + " / " + h(s.Siri || "-") + "</td>" +
       "<td class='c-sub'>P: " + (s.p != null ? s.p + "%" : "-") + "</td><td class='c-sub'>J: " + (s.j != null ? s.j + "%" : "-") + "</td>" +
-      "<td class='c-sub'><b>" + (s.overall != null ? s.overall + "%" : "-") + "</b></td><td class='c-st'><span class='badge " + h(s.status) + "'>" + h(s.status) + "</span></td></tr>";
+      "<td class='c-sub'><b>" + (s.overall != null ? s.overall + "%" : "-") + "</b></td><td class='c-st'><span class='badge " + h(s.status) + "'>" + h(s.status) + "</span></td>" +
+      "<td class='c-sub'>" + (s.refPdf ? "<a href='" + h(s.refPdf) + "' target='_blank' rel='noopener' onclick='event.stopPropagation()' style='color:var(--primary);font-weight:600'>📄 PDF</a>" : (s.hasR ? "Ditaip" : "<span class='muted'>-</span>")) + "</td>" +
+      "<td class='c-act'><button class='btn' style='min-height:36px;padding:0 12px' onclick=\"printIndividual('" + h(s.No_KP) + "',event)\">Cetak</button></td></tr>";
   });
   html += "</tbody></table></div>";
   $("s-laporan").innerHTML = html;
@@ -604,7 +640,7 @@ function renderDetail(){
   $("sh-title").textContent = p.Nama_Pelajar;
   $("sh-sub").textContent = p.No_KP + (p.Kumpulan ? " · Kump " + p.Kumpulan : "");
   $("sh-badge").innerHTML = "<span class='badge " + h(d.status) + "'>" + h(d.status) + (d.overall ? " " + d.overall.percent + "%" : "") + "</span>";
-  var tabs = [["perkhemahan","Perkhemahan"],["jalinan","Jalinan"],["refleksi","Refleksi"],["borang","Borang"],["maklumat","Maklumat"]];
+  var tabs = [["perkhemahan","Perkhemahan"],["jalinan","Jalinan"],["refleksi","Refleksi"],["borang","B1 & C1"],["maklumat","Maklumat"]];
   $("sh-tabs").innerHTML = tabs.map(function(t){ return "<button class='" + (S.tab === t[0] ? "on" : "") + "' onclick=\"S.tab='" + t[0] + "';renderDetail()\">" + t[1] + "</button>"; }).join("");
   var b = $("sh-body");
   if (S.tab === "perkhemahan") b.innerHTML = scoreForm("P", P_ASPEK, d.perkhemahan);
@@ -659,33 +695,92 @@ function patchStudent(d){
   s.p = o && o.perkhemahan ? o.perkhemahan.percent : null; s.j = o && o.jalinan ? o.jalinan.percent : null;
   s.overall = o ? o.percent : null; s.status = d.status;
   s.hasP = !!(o && o.perkhemahan); s.hasJ = !!(o && o.jalinan); s.hasR = !!d.refleksi; s.hasB = !!d.borang;
+  s.refPdf = d.refleksi ? (d.refleksi.URL_PDF || "") : "";
+  s.b1Ya = d.borang ? Number(d.borang.Bil_YA || 0) : 0;
   renderAll();
 }
 
+var PDF_MAKS_MB = 10;
 function refleksiForm(r, onsave){
   var keys = ["Refleksi_1","Refleksi_2","Refleksi_3"], html = "";
   if (r && r.Tarikh) html += "<div class='note ok'>Disimpan: " + h(fmtDate(r.Tarikh)) + "</div>";
+  html += "<p class='small muted' style='margin-bottom:12px'>Taip jawapan di bawah. Jika refleksi panjang, muat naik dalam bentuk PDF. Anda boleh gunakan kedua-duanya.</p>";
   SOALAN.forEach(function(q, i){ html += "<label class='f'><span>" + (i+1) + ". " + h(q) + "</span><textarea id='ref-" + i + "' rows='5'>" + h(r ? r[keys[i]] : "") + "</textarea></label>"; });
+  html += "<div class='aspek'><h4>Refleksi PDF (pilihan)</h4>";
+  if (r && r.URL_PDF) html += "<p style='margin:4px 0 10px'>" + pdfLink(r) + "</p>";
+  html += "<input type='file' id='ref-pdf' accept='application/pdf,.pdf' style='max-width:100%'><div class='small muted' style='margin-top:6px'>Maksimum " + PDF_MAKS_MB + "MB. " + (r && r.URL_PDF ? "Muat naik baharu akan menggantikan PDF sedia ada." : "") + "</div></div>";
   html += "<button class='btn pri block' onclick='" + onsave + "'>Simpan Refleksi</button>";
   return html;
 }
+function pdfLink(r){
+  return "<a href='" + h(r.URL_PDF) + "' target='_blank' rel='noopener' style='color:var(--primary);font-weight:600'>📄 Lihat Refleksi PDF</a>" + (r.Tarikh_PDF ? " <span class='small muted'>(" + h(fmtDate(r.Tarikh_PDF)) + ")</span>" : "");
+}
+// Paparan baca sahaja: jawapan + PDF
+function refleksiView(r){
+  if (!r || (!r.Refleksi_1 && !r.Refleksi_2 && !r.Refleksi_3 && !r.URL_PDF)) return "<div class='muted'>Belum diisi.</div>";
+  var keys = ["Refleksi_1","Refleksi_2","Refleksi_3"], x = "";
+  SOALAN.forEach(function(q, i){ if (r[keys[i]]) x += "<div style='margin-bottom:10px'><div class='small muted'>" + (i+1) + ". " + h(q) + "</div><div style='white-space:pre-wrap'>" + h(r[keys[i]]) + "</div></div>"; });
+  if (r.URL_PDF) x += "<div>" + pdfLink(r) + "</div>";
+  return x;
+}
 function refVals(){ return { r1:$("ref-0").value, r2:$("ref-1").value, r3:$("ref-2").value }; }
+function readPdf(file){
+  return new Promise(function(res, rej){
+    if (!/\.pdf$/i.test(file.name) && file.type !== "application/pdf") return rej(new Error("Sila pilih fail PDF."));
+    if (file.size > PDF_MAKS_MB * 1024 * 1024) return rej(new Error("Fail PDF melebihi " + PDF_MAKS_MB + "MB."));
+    var fr = new FileReader();
+    fr.onload = function(){ res(String(fr.result).split(",")[1]); };
+    fr.onerror = function(){ rej(new Error("Fail tidak dapat dibaca.")); };
+    fr.readAsDataURL(file);
+  });
+}
+// Simpan teks, kemudian PDF (jika dipilih). Satu aliran, tiada ulangan automatik.
+function saveRefleksiAll(btn, pelajarId){
+  var v = refVals(), file = $("ref-pdf").files[0];
+  if (!v.r1.trim() && !v.r2.trim() && !v.r3.trim() && !file && !(S.detail.refleksi && S.detail.refleksi.URL_PDF)) { toast("Taip refleksi atau pilih fail PDF.", true); return Promise.reject(null); }
+  if (pelajarId) v.pelajarId = pelajarId;
+  busy(btn, true);
+  return api("saveRefleksi", v).then(function(){
+    if (!file) return;
+    btn.innerHTML = "Memuat naik PDF…";
+    return readPdf(file).then(function(b64){ var d = { base64Data:b64 }; if (pelajarId) d.pelajarId = pelajarId; return api("saveRefleksiPdf", d, 120000); });
+  }).then(function(){ toast(file ? "Refleksi & PDF disimpan ✓" : "Refleksi disimpan ✓"); return api("getStudentDetail", pelajarId ? { pelajarId:pelajarId } : {}); })
+    .catch(function(e){ toast(e.message, true); busy(btn, false); throw null; });
+}
 function saveRefleksiStaf(btn){
-  busy(btn, true); var v = refVals(); v.pelajarId = S.detail.pelajar.No_KP;
-  api("saveRefleksi", v).then(function(){ toast("Refleksi disimpan ✓"); S.detail.refleksi = { Refleksi_1:v.r1, Refleksi_2:v.r2, Refleksi_3:v.r3, Tarikh:new Date().toISOString() }; patchStudent(S.detail); renderDetail(); })
-    .catch(function(e){ toast(e.message, true); }).finally(function(){ busy(btn, false); });
+  saveRefleksiAll(btn, S.detail.pelajar.No_KP).then(function(d){ S.detail = d; patchStudent(d); renderDetail(); }).catch(function(){});
 }
 
 function borangView(d){
   var b = d.borang;
-  if (!b) return "<div class='state'>Pelajar belum mengisi Borang Pelepasan.</div>";
-  var u = imgUrl(b.URL_Gambar || d.pelajar.URL_Gambar);
-  var html = "<div class='card'>" + (u ? "<img class='photo' style='margin-bottom:12px' src='" + h(u) + "' alt='Gambar pelajar'>" : "") + "<dl class='info'>";
-  [["Alamat","Alamat"],["No telefon","No_Telefon"],["Penyakit berat","Penyakit_Berat"],["Ubat berterusan","Ubat_Berterusan"],["Alergi","Alergi"],["Perakuan kesihatan","Perakuan_Kesihatan"],["Perakuan aktiviti","Perakuan_Activity_Risk"]]
-    .forEach(function(f){ html += "<dt>" + f[0] + "</dt><dd>" + h(b[f[1]] || "-") + "</dd>"; });
-  html += "<dt>Tarikh diisi</dt><dd>" + h(fmtDate(b.Tarikh_Isi)) + "</dd></dl></div>";
-  html += "<button class='btn block' onclick='printStudent()'>Cetak Borang Lengkap</button>";
+  if (!b) return "<div class='state'>Pelajar belum mengisi Borang B1 (Akuan Kesihatan) & C1 (Lepas Tanggung).</div>";
+  var u = imgUrl(b.URL_Gambar || d.pelajar.URL_Gambar), j = parseB1(b);
+  var html = "";
+  if (j) {
+    var ya = b1Items(d).filter(function(q){ return !q.h && j[q.id] && j[q.id].status === "YA"; });
+    html += ya.length ? "<div class='note' style='background:var(--bad-soft);color:var(--bad)'><b>⚠ " + ya.length + " item YA dalam Akuan Kesihatan (B1)</b><ul style='margin:6px 0 0 18px'>" + ya.map(function(q){ return "<li>" + h(q.soalan) + (j[q.id].catatan ? " — <i>" + h(j[q.id].catatan) + "</i>" : "") + "</li>"; }).join("") + "</ul></div>"
+                      : "<div class='note ok'>B1: Tiada masalah kesihatan dilaporkan (semua TIDAK).</div>";
+    html += "<div class='card'>" + (u ? "<img class='photo' style='margin-bottom:12px' src='" + h(u) + "' alt=''>" : "") + "<dl class='info'>" +
+      "<dt>C1 Lepas Tanggung</dt><dd>" + (b.Perakuan_Activity_Risk === "YA" ? "<span style='color:var(--ok)'>✓ Dipersetujui</span>" : "-") + "</dd>" +
+      "<dt>Program</dt><dd>" + h(b.C1_Program || "-") + "</dd><dt>Tarikh program</dt><dd>" + h(b.C1_Tarikh || "-") + "</dd>" +
+      "<dt>Institusi</dt><dd>" + h(b.C1_Institusi || "-") + "</dd><dt>Dihantar</dt><dd>" + h(fmtDate(b.Tarikh_Isi)) + "</dd></dl></div>";
+  } else {
+    html += "<div class='note'>Rekod format lama (sebelum B1/C1). Minta pelajar isi semula.</div><div class='card'><dl class='info'>";
+    [["Alamat","Alamat"],["No telefon","No_Telefon"],["Penyakit berat","Penyakit_Berat"],["Ubat berterusan","Ubat_Berterusan"],["Alergi","Alergi"]]
+      .forEach(function(f){ html += "<dt>" + f[0] + "</dt><dd>" + h(b[f[1]] || "-") + "</dd>"; });
+    html += "</dl></div>";
+  }
+  html += "<div class='btns'><button class='btn pri' onclick='printPelepasan()'>Cetak B1 & C1</button><button class='btn' onclick='printStudent()'>Cetak Borang Lengkap</button></div>";
   return html;
+}
+function parseB1(b){ try { return b && b.B1_Jawapan ? JSON.parse(b.B1_Jawapan) : null; } catch(e) { return null; } }
+function isPerempuan(p){ return String(p.Jantina || "").toLowerCase() !== "lelaki"; }
+function b1Items(d){ var pr = isPerempuan(d.pelajar); return (d.b1Soalan || []).filter(function(q){ return !q.perempuan || pr; }); }
+function c1Teks(nama, kp, inst, prog){
+  var u = function(v){ return "<u>" + h(v || "\u00a0".repeat(20)) + "</u>"; };
+  return "<p>Bahawasanya, saya " + u(nama) + " No. K/P " + u(kp) + " dari " + u(inst) + " bersetuju mengikuti program " + u(prog) + " secara sukarela dan dengan ini melepaskan penganjur daripada sebarang tanggungan berkaitan kecederaan atau musibah.</p>" +
+    "<p><b>DENGAN INI</b>, bagi pihak diri saya, waris saya, wakil, pendaftar atau wakil-wakil lain di sisi undang-undang atau mana-mana satu daripada mereka, menolak segala tuntutan dan tindakan terhadap apa-apa kecederaan kepada badan atau hilang upaya atau mati atau apa jenis kerosakan sama ada kepada diri atau kepada harta saya, yang mungkin saya hadapi atau alami semasa tempoh saya mengikuti program yang dinyatakan di atas.</p>" +
+    "<p><b>SAYA FAHAM DAN BERSETUJU</b>, melepaskan tanggungjawab dan tanggungan penganjur, institusi atau mana-mana kumpulan atau individu berkaitan ke atas kecederaan kepada badan atau hilang upaya atau mati atau apa jenis kerosakan sama ada kepada diri atau kepada harta saya semasa mengikuti program ini.</p>";
 }
 
 function maklumatView(p){
@@ -733,21 +828,32 @@ function delStudent(btn){
 }
 
 // ===================== CETAK =====================
-function printWin(title, body){
+// Buka tetingkap terus semasa klik (elak disekat pop-up blocker), isi kemudian
+function openPrintWin(){
   var w = window.open("", "_blank");
-  if (!w) { toast("Tetingkap cetak disekat. Benarkan pop-up untuk laman ini.", true); return; }
-  w.document.write("<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>" + h(title) + "</title><style>body{font-family:system-ui,sans-serif;padding:20px;font-size:12px;color:#111}h1{font-size:17px;text-align:center;margin:0 0 4px}h2{font-size:12px;text-align:center;color:#555;font-weight:normal;margin:0 0 16px}table{width:100%;border-collapse:collapse;margin:6px 0}th,td{border:1px solid #ccc;padding:6px;text-align:left;vertical-align:top}th{background:#1f5f4a;color:#fff;font-size:11px}.sec{background:#e2eee8;padding:6px 8px;font-weight:bold;margin-top:14px}.L{color:#2f7d4f;font-weight:bold}.G{color:#b23b2e;font-weight:bold}.sig{display:flex;justify-content:space-around;margin-top:40px;text-align:center}button{margin-top:16px;padding:10px 20px;background:#1f5f4a;color:#fff;border:0;border-radius:8px;font-size:14px}@media print{button{display:none}}</style></head><body>" + body + "<p style='color:#888;font-size:10px;margin-top:14px'>Dijana: " + new Date().toLocaleString("ms-MY") + "</p><button onclick='window.print()'>Cetak / Simpan PDF</button></body></html>");
+  if (!w) { toast("Tetingkap cetak disekat. Benarkan pop-up untuk laman ini.", true); return null; }
+  w.document.write("<p style='font-family:sans-serif;padding:20px'>Menyediakan dokumen...</p>");
+  return w;
+}
+function logoHtml(){
+  var u; try { u = new URL(LOGO_URL, location.href).href; } catch(e) { u = LOGO_URL; }
+  return "<div style='text-align:center;margin-bottom:8px'><img src='" + h(u) + "' alt='Logo IPG' style='max-height:80px;max-width:60%' onerror=\"this.parentNode.remove()\"></div>";
+}
+function printWin(title, body, w){
+  w = w || openPrintWin(); if (!w) return;
+  w.document.open();
+  w.document.write("<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>" + h(title) + "</title><style>body{font-family:system-ui,sans-serif;padding:20px;font-size:12px;color:#111}.photo{width:110px;height:130px;object-fit:cover;border:1px solid #ccc;float:right;margin:0 0 8px 12px}.decl{margin:6px 0}h1{font-size:17px;text-align:center;margin:0 0 4px}h2{font-size:12px;text-align:center;color:#555;font-weight:normal;margin:0 0 16px}table{width:100%;border-collapse:collapse;margin:6px 0}th,td{border:1px solid #ccc;padding:6px;text-align:left;vertical-align:top}th{background:#1f5f4a;color:#fff;font-size:11px}.sec{background:#e2eee8;padding:6px 8px;font-weight:bold;margin-top:14px}.L{color:#2f7d4f;font-weight:bold}.G{color:#b23b2e;font-weight:bold}.sig{display:flex;justify-content:space-around;margin-top:40px;text-align:center}button{margin-top:16px;padding:10px 20px;background:#1f5f4a;color:#fff;border:0;border-radius:8px;font-size:14px}@media print{button{display:none}}</style></head><body>" + logoHtml() + body + "<p style='color:#888;font-size:10px;margin-top:14px'>Dijana: " + new Date().toLocaleString("ms-MY") + "</p><button onclick='window.print()'>Cetak / Simpan PDF</button></body></html>");
   w.document.close();
 }
 function printReport(){
   var L = repList(), f = $("f-siri").value;
   var b = "<h1>Laporan Pentaksiran Program BIG 2026</h1><h2>" + h(S.user.ipgk || "") + (f ? " · Siri " + h(f) : "") + (S.repStatus ? " · " + h(S.repStatus) : "") + " · " + L.length + " pelajar</h2>";
-  b += "<table><thead><tr><th>Bil</th><th>Nama</th><th>No KP</th><th>Kumpulan</th><th>Siri</th><th>Perkh (70%)</th><th>Jalin (30%)</th><th>Jumlah</th><th>Status</th></tr></thead><tbody>";
-  L.forEach(function(s, i){ b += "<tr><td>" + (i+1) + "</td><td>" + h(s.Nama_Pelajar) + "</td><td>" + h(s.No_KP) + "</td><td>" + h(s.Kumpulan || "-") + "</td><td>" + h(s.Siri || "-") + "</td><td>" + (s.p != null ? s.p + "%" : "-") + "</td><td>" + (s.j != null ? s.j + "%" : "-") + "</td><td><b>" + (s.overall != null ? s.overall + "%" : "-") + "</b></td><td class='" + (s.status === "Lulus" ? "L" : s.status === "Gagal" ? "G" : "") + "'>" + h(s.status) + "</td></tr>"; });
+  b += "<table><thead><tr><th>Bil</th><th>Nama</th><th>No KP</th><th>Kumpulan</th><th>Siri</th><th>Perkh (70%)</th><th>Jalin (30%)</th><th>Jumlah</th><th>Status</th><th>Refleksi</th></tr></thead><tbody>";
+  L.forEach(function(s, i){ b += "<tr><td>" + (i+1) + "</td><td>" + h(s.Nama_Pelajar) + "</td><td>" + h(s.No_KP) + "</td><td>" + h(s.Kumpulan || "-") + "</td><td>" + h(s.Siri || "-") + "</td><td>" + (s.p != null ? s.p + "%" : "-") + "</td><td>" + (s.j != null ? s.j + "%" : "-") + "</td><td><b>" + (s.overall != null ? s.overall + "%" : "-") + "</b></td><td class='" + (s.status === "Lulus" ? "L" : s.status === "Gagal" ? "G" : "") + "'>" + h(s.status) + "</td><td>" + (s.refPdf ? "<a href='" + h(s.refPdf) + "'>PDF</a>" : (s.hasR ? "Ditaip" : "-")) + "</td></tr>"; });
   printWin("Laporan BIG 2026", b + "</tbody></table>");
 }
-function printStudent(){
-  var d = S.detail, s = d.pelajar, o = d.overall;
+function printStudent(d, w){
+  d = d || S.detail; var s = d.pelajar, o = d.overall;
   var b = "<h1>BORANG PENTAKSIRAN PROGRAM BIG 2026</h1><h2>Institut Pendidikan Guru Malaysia</h2>";
   b += "<table><tr><td><b>Nama:</b> " + h(s.Nama_Pelajar) + "</td><td><b>No KP:</b> " + h(s.No_KP) + "</td></tr><tr><td><b>Kelas:</b> " + h(s.Kelas || "-") + "</td><td><b>Siri:</b> " + h(s.Siri || "-") + "</td></tr><tr><td><b>Kumpulan:</b> " + h(s.Kumpulan || "-") + "</td><td><b>Jawatan:</b> " + h(s.Jawatan || "-") + "</td></tr></table>";
   var part = function(title, aspek, a, sc){
@@ -761,15 +867,56 @@ function printStudent(){
   };
   b += part("A. PERKHEMAHAN (70%)", P_ASPEK, d.perkhemahan, o && o.perkhemahan);
   b += part("B. JALINAN BAKTI (30%)", J_ASPEK, d.jalinan, o && o.jalinan);
-  if (d.refleksi) { b += "<div class='sec'>C. REFLEKSI</div>"; ["Refleksi_1","Refleksi_2","Refleksi_3"].forEach(function(k, i){ b += "<p><b>" + (i+1) + ". " + h(SOALAN[i]) + "</b><br>" + h(d.refleksi[k] || "-") + "</p>"; }); }
+  b += "<div class='sec'>C. REFLEKSI</div>";
+  if (d.refleksi) {
+    ["Refleksi_1","Refleksi_2","Refleksi_3"].forEach(function(k, i){ if (d.refleksi[k]) b += "<p><b>" + (i+1) + ". " + h(SOALAN[i]) + "</b><br><span style='white-space:pre-wrap'>" + h(d.refleksi[k]) + "</span></p>"; });
+    if (d.refleksi.URL_PDF) b += "<p><b>Lampiran refleksi (PDF):</b> <a href='" + h(d.refleksi.URL_PDF) + "'>" + h(d.refleksi.URL_PDF) + "</a></p>";
+    if (!d.refleksi.Refleksi_1 && !d.refleksi.Refleksi_2 && !d.refleksi.Refleksi_3 && !d.refleksi.URL_PDF) b += "<p>Belum diisi.</p>";
+  } else b += "<p>Belum diisi.</p>";
   if (d.borang) {
-    var bp = d.borang; b += "<div class='sec'>D. BORANG PELEPASAN</div><table>";
-    [["Alamat","Alamat"],["No telefon","No_Telefon"],["Penyakit berat","Penyakit_Berat"],["Ubat berterusan","Ubat_Berterusan"],["Alergi","Alergi"],["Perakuan kesihatan","Perakuan_Kesihatan"],["Perakuan aktiviti","Perakuan_Activity_Risk"]].forEach(function(f){ b += "<tr><th style='width:35%'>" + f[0] + "</th><td>" + h(bp[f[1]] || "-") + "</td></tr>"; });
-    b += "</table>";
+    var bp = d.borang, jb = parseB1(bp);
+    b += "<div class='sec'>D. AKUAN KESIHATAN (B1) & LEPAS TANGGUNG (C1)</div>";
+    if (jb) {
+      var yaL = b1Items(d).filter(function(q){ return !q.h && jb[q.id] && jb[q.id].status === "YA"; });
+      b += "<p><b>B1:</b> " + (yaL.length ? yaL.length + " item YA &mdash; " + yaL.map(function(q){ return h(q.soalan) + (jb[q.id].catatan ? " (" + h(jb[q.id].catatan) + ")" : ""); }).join("; ") : "Tiada masalah kesihatan dilaporkan.") + "</p>";
+      b += "<p><b>C1:</b> " + (bp.Perakuan_Activity_Risk === "YA" ? "Dipersetujui" : "-") + " &middot; " + h(bp.C1_Program || "") + " &middot; dihantar " + h(fmtDate(bp.Tarikh_Isi)) + "</p>";
+    } else b += "<p>Penyakit berat: " + h(bp.Penyakit_Berat || "-") + " &middot; Ubat: " + h(bp.Ubat_Berterusan || "-") + " &middot; Alergi: " + h(bp.Alergi || "-") + "</p>";
   }
   b += "<div class='sec'>E. KEPUTUSAN</div><p style='font-size:14px'>Jumlah: <b>" + (o ? o.percent + "%" : "-") + "</b> &nbsp; Status: <span class='" + (d.status === "Lulus" ? "L" : d.status === "Gagal" ? "G" : "") + "'>" + h(d.status) + "</span></p>";
   b += "<div class='sig'><div>______________________<br>Pensyarah</div><div>______________________<br>Penyelaras</div></div>";
-  printWin("Borang - " + s.Nama_Pelajar, b);
+  printWin("Borang - " + s.Nama_Pelajar, b, w);
+}
+// Cetak individu dari senarai Laporan
+function printIndividual(kp, ev){
+  ev.stopPropagation();
+  var w = openPrintWin(); if (!w) return;
+  api("getStudentDetail", { pelajarId:kp }).then(function(d){ printStudent(d, w); })
+    .catch(function(e){ w.close(); toast(e.message, true); });
+}
+// Borang B1 + C1 (pensyarah & pelajar) - format seperti e-RAMS
+function printPelepasan(d){
+  d = d || S.detail; var s = d.pelajar, bp = d.borang, j = parseB1(bp);
+  if (!bp) { toast("Borang B1 & C1 belum diisi.", true); return; }
+  if (!j) { toast("Rekod format lama. Sila isi semula Borang B1 & C1.", true); return; }
+  var sop = "<p style='text-align:center;font-size:9pt;color:#666;text-transform:uppercase;margin:0'>Prosedur Operasi Standard Rekreasi Luar Pelajar &mdash; " + h(bp.C1_Institusi || C1_INSTITUSI) + "</p>";
+  var b = sop + "<h1 style='margin-top:6px'>BORANG AKUAN STATUS KESIHATAN (B1)</h1>";
+  b += "<p style='line-height:1.8'>Saya <b><u>" + h(s.Nama_Pelajar) + "</u></b>, No. K/P <b><u>" + h(s.No_KP) + "</u></b> dengan ini mengaku bahawa maklumat yang diberikan adalah benar dan tepat.</p>";
+  b += "<table><thead><tr><th style='width:6%;text-align:center'>BHG</th><th>KENYATAAN / PENYAKIT</th><th style='width:7%;text-align:center'>YA</th><th style='width:7%;text-align:center'>TIDAK</th><th style='width:30%'>CATATAN</th></tr></thead><tbody>";
+  b1Items(d).forEach(function(q){
+    if (q.h) { b += "<tr><td style='text-align:center;font-weight:bold;background:#1f5f4a;color:#fff'>" + q.bhg + "</td><td colspan='4' style='font-weight:bold;background:#1f5f4a;color:#fff'>" + h(q.text) + "</td></tr>"; return; }
+    var a = j[q.id] || { status:"TIDAK" };
+    b += "<tr><td style='text-align:center'>" + q.bhg + "</td><td>" + q.no + ". " + h(q.soalan) + "</td><td style='text-align:center'>" + (a.status === "YA" ? "&#10003;" : "") + "</td><td style='text-align:center'>" + (a.status !== "YA" ? "&#10003;" : "") + "</td><td><i>" + h(a.catatan || "") + "</i></td></tr>";
+  });
+  b += "</tbody></table><p style='font-size:9pt;font-style:italic;color:#555'>* Peserta yang menjawab YA pada mana-mana soalan dikehendaki mendapatkan perakuan doktor sebelum menyertai aktiviti berisiko tinggi.</p>";
+  b += "<div class='sig'><div>______________________<br>T/Tangan Peserta<br><small>Tarikh: " + h(fmtDate(bp.Tarikh_Isi)) + "</small></div><div>______________________<br>Disemak Oleh (Pegawai)<br><small>Nama &amp; Jawatan</small></div></div>";
+  // C1 (halaman baharu)
+  b += "<div style='page-break-before:always;break-before:page;margin-top:30px'></div>" + logoHtml() + sop;
+  b += "<h1 style='margin-top:6px'>BORANG AKUAN LEPAS TANGGUNG PESERTA / PELAJAR (C1)</h1><h2><i>(*Diisi dan dikembalikan kepada pegawai bertanggungjawab sebelum program dimulakan)</i></h2>";
+  b += "<p><b>NAMA PROGRAM:</b> " + h(bp.C1_Program || "") + "<br><b>TARIKH:</b> " + h(bp.C1_Tarikh || "") + "</p>";
+  b += "<div style='font-size:10.5pt;line-height:1.85;text-align:justify'>" + c1Teks(s.Nama_Pelajar, s.No_KP, bp.C1_Institusi, bp.C1_Program) + "</div>";
+  b += "<p>[" + (bp.Perakuan_Activity_Risk === "YA" ? "&#10003;" : "&nbsp;&nbsp;") + "] Dipersetujui secara dalam talian pada " + h(fmtDate(bp.Tarikh_Isi)) + "</p>";
+  b += "<div class='sig'><div>______________________<br>Tandatangan Peserta<br><small>Nama &amp; Tarikh</small></div><div>______________________<br>Tandatangan Saksi<br><small>Nama, Jawatan &amp; Tarikh</small></div></div>";
+  printWin("B1 & C1 - " + s.Nama_Pelajar, b);
 }
 
 // ===================== PORTAL PELAJAR =====================
@@ -785,21 +932,35 @@ function fetchMine(){
 }
 function renderMine(){
   var d = S.detail, p = d.pelajar, b = d.borang;
-  // Borang
-  var u = imgUrl((b && b.URL_Gambar) || p.URL_Gambar);
-  var x = "<h2 class='title'>Borang Pelepasan</h2>";
-  x += b ? "<div class='note ok'>Borang telah dihantar pada " + h(fmtDate(b.Tarikh_Isi)) + ". Anda boleh kemas kini bila-bila masa.</div>" : "<div class='note'>Borang ini wajib diisi sebelum menyertai aktiviti Program BIG.</div>";
+  // Borang B1 + C1
+  var u = imgUrl((b && b.URL_Gambar) || p.URL_Gambar), j = parseB1(b) || {};
+  var x = "<h2 class='title'>Borang Kesihatan & Lepas Tanggung</h2>";
+  x += b && parseB1(b) ? "<div class='note ok'>Borang telah dihantar pada " + h(fmtDate(b.Tarikh_Isi)) + ". Anda boleh kemas kini bila-bila masa.</div>" : "<div class='note'>Borang B1 dan C1 WAJIB diisi sebelum menyertai aktiviti Program BIG.</div>";
   x += "<div class='card'><h3>Maklumat diri</h3><dl class='info'><dt>Nama</dt><dd>" + h(p.Nama_Pelajar) + "</dd><dt>No KP</dt><dd>" + h(p.No_KP) + "</dd><dt>Kelas</dt><dd>" + h(p.Kelas || "-") + "</dd><dt>Siri / Kumpulan</dt><dd>" + h(p.Siri || "-") + " / " + h(p.Kumpulan || "-") + "</dd></dl></div>";
-  x += "<form class='card' onsubmit='return saveBorang(event)'><h3>Butiran kesihatan & perakuan</h3>";
-  x += "<label class='f'><span>Alamat *</span><textarea id='bp-alamat' rows='3' required>" + h(b ? b.Alamat : "") + "</textarea></label>";
-  x += "<label class='f'><span>No telefon *</span><input type='tel' id='bp-tel' value='" + h(b ? b.No_Telefon : "") + "' required></label>";
-  x += "<label class='f'><span>Penyakit berat</span><input type='text' id='bp-penyakit' placeholder='Tidak ada' value='" + h(b ? b.Penyakit_Berat : "") + "'></label>";
-  x += "<label class='f'><span>Ubat berterusan</span><input type='text' id='bp-ubat' placeholder='Tidak' value='" + h(b ? b.Ubat_Berterusan : "") + "'></label>";
-  x += "<label class='f'><span>Alergi</span><input type='text' id='bp-alergi' placeholder='Tidak ada' value='" + h(b ? b.Alergi : "") + "'></label>";
-  x += "<label class='f'><span>Gambar passport (pilihan)</span></label><div class='upload' style='margin:-6px 0 14px'>" + (u ? "<img class='photo' id='bp-prev' src='" + h(u) + "' alt=''>" : "<img class='photo' id='bp-prev' alt='' hidden>") + "<div><input type='file' id='bp-img' accept='image/*' onchange='previewImg(this)'><div class='small muted' style='margin-top:6px'>Gambar akan dikecilkan secara automatik.</div></div></div>";
-  x += "<label class='check'><input type='checkbox' id='bp-pk' required" + (b && b.Perakuan_Kesihatan === "YA" ? " checked" : "") + "><span>Saya mengaku maklumat kesihatan di atas adalah benar.</span></label>";
-  x += "<label class='check'><input type='checkbox' id='bp-pr' required" + (b && b.Perakuan_Activity_Risk === "YA" ? " checked" : "") + "><span>Saya bersetuju menyertai aktiviti dan mematuhi SOP keselamatan.</span></label>";
-  x += "<button class='btn pri block' id='bp-save' type='submit'>" + (b ? "Kemas Kini Borang" : "Hantar Borang") + "</button></form>";
+  x += "<form onsubmit='return saveBorang(event)'>";
+  // B1
+  x += "<div class='card'><h3>B1 &middot; Akuan Status Kesihatan</h3><ul class='small muted' style='margin:0 0 12px 18px'><li>Tandakan YA atau TIDAK bagi setiap soalan dengan jujur.</li><li>Jika YA, nyatakan butiran dalam ruang catatan.</li><li>Peserta yang mempunyai penyakit kronik perlu mendapatkan kelulusan doktor terlebih dahulu.</li><li>Maklumat ini SULIT dan hanya digunakan untuk tujuan keselamatan peserta.</li></ul><div class='b1' id='b1-box' onchange='b1Toggle(event)'>";
+  b1Items(d).forEach(function(q){
+    if (q.h) { x += "<div class='b1h'>" + q.bhg + ": " + h(q.text) + "</div>"; return; }
+    var a = j[q.id] || { status:"TIDAK", catatan:"" }, ya = a.status === "YA";
+    x += "<div class='b1q'><div class='t'>" + q.no + ". " + h(q.soalan) + "</div><div class='yt'>" +
+      "<label class='ya'><input type='radio' name='q_" + q.id + "' value='YA'" + (ya ? " checked" : "") + ">YA</label>" +
+      "<label class='td'><input type='radio' name='q_" + q.id + "' value='TIDAK'" + (ya ? "" : " checked") + ">TIDAK</label></div>" +
+      "<input type='text' class='cat' id='cat_" + q.id + "' placeholder='Catatan / nyatakan' value='" + h(a.catatan) + "'" + (ya ? "" : " hidden") + "></div>";
+  });
+  x += "</div><label class='check'><input type='checkbox' id='bp-pk' required" + (b && parseB1(b) ? " checked" : "") + "><span>Saya mengaku bahawa maklumat kesihatan yang diberikan adalah benar dan tepat.</span></label></div>";
+  // C1
+  var prog = (b && b.C1_Program) || C1_PROGRAM, tkh = (b && b.C1_Tarikh) || C1_TARIKH, inst = (b && b.C1_Institusi) || C1_INSTITUSI;
+  x += "<div class='card'><h3>C1 &middot; Akuan Lepas Tanggung</h3><div class='row2'>" +
+    "<label class='f'><span>Nama program</span><input type='text' id='c1-prog' value='" + h(prog) + "' required></label>" +
+    "<label class='f'><span>Tarikh program</span><input type='text' id='c1-tkh' value='" + h(tkh) + "' placeholder='Contoh: 10 - 12 Oktober 2026' required></label></div>" +
+    "<label class='f'><span>Nama institusi</span><input type='text' id='c1-inst' value='" + h(inst) + "' required></label>" +
+    "<div class='legal'>" + c1Teks(p.Nama_Pelajar, p.No_KP, inst, prog) + "</div>" +
+    "<label class='check'><input type='checkbox' id='bp-pr' required" + (b && b.Perakuan_Activity_Risk === "YA" && parseB1(b) ? " checked" : "") + "><span><b>Saya faham dan bersetuju</b> dengan Akuan Lepas Tanggung di atas.</span></label></div>";
+  // Gambar (pilihan)
+  x += "<div class='card'><h3>Gambar passport (pilihan)</h3><div class='upload'>" + (u ? "<img class='photo' id='bp-prev' src='" + h(u) + "' alt=''>" : "<img class='photo' id='bp-prev' alt='' hidden>") + "<div><input type='file' id='bp-img' accept='image/*' onchange='previewImg(this)'><div class='small muted' style='margin-top:6px'>Gambar akan dikecilkan secara automatik.</div></div></div></div>";
+  x += "<button class='btn pri block' id='bp-save' type='submit'>" + (b && parseB1(b) ? "Kemas Kini Borang" : "Hantar Borang B1 & C1") + "</button></form>";
+  if (b && parseB1(b)) x += "<button class='btn block' style='margin-top:8px' onclick='printPelepasan()'>Cetak Borang B1 & C1</button>";
   $("s-pborang").innerHTML = x;
   // Refleksi
   $("s-prefleksi").innerHTML = "<h2 class='title'>Refleksi Saya</h2><div class='card'>" + refleksiForm(d.refleksi, "saveRefleksiPel(this)") + "</div>";
@@ -807,9 +968,16 @@ function renderMine(){
   var o = d.overall, row = function(l, sc){ return "<div style='margin-bottom:14px'><div style='display:flex;justify-content:space-between'><b>" + l + "</b><span>" + (sc ? sc.total + "/" + sc.max + " · " + sc.percent + "%" : "<span class='muted'>Belum dinilai</span>") + "</span></div><div class='bar'><i style='width:" + (sc ? sc.percent : 0) + "%'></i></div></div>"; };
   var st = "<h2 class='title'>Status Saya</h2><div class='card' style='text-align:center'><div class='muted small'>Keputusan keseluruhan</div><div style='font-size:44px;font-weight:800;line-height:1.2'>" + (o ? o.percent + "%" : "—") + "</div><span class='badge " + h(d.status) + "' style='font-size:14px'>" + h(d.status) + "</span></div>";
   st += "<div class='card'>" + row("Perkhemahan (70%)", o && o.perkhemahan) + row("Jalinan Bakti (30%)", o && o.jalinan) + "</div>";
-  st += "<div class='card'><dl class='info'><dt>Borang pelepasan</dt><dd>" + (b ? "<span style='color:var(--ok)'>✓ Diisi</span>" : "<span style='color:var(--bad)'>Belum diisi</span>") + "</dd><dt>Refleksi</dt><dd>" + (d.refleksi ? "<span style='color:var(--ok)'>✓ Diisi</span>" : "<span style='color:var(--bad)'>Belum diisi</span>") + "</dd></dl></div>";
+  st += "<div class='card'><dl class='info'><dt>Borang B1 & C1</dt><dd>" + (b ? "<span style='color:var(--ok)'>✓ Diisi</span>" : "<span style='color:var(--bad)'>Belum diisi</span>") + "</dd><dt>Refleksi</dt><dd>" + (d.refleksi ? "<span style='color:var(--ok)'>✓ Diisi</span>" : "<span style='color:var(--bad)'>Belum diisi</span>") + "</dd></dl></div>";
+  st += "<div class='card'><h3>Refleksi</h3>" + refleksiView(d.refleksi) + "</div>";
   st += "<button class='btn block' onclick='fetchMine()'>Muat semula</button>";
   $("s-pstatus").innerHTML = st;
+}
+// Papar ruang catatan apabila YA dipilih
+function b1Toggle(e){
+  var t = e.target; if (t.type !== "radio") return;
+  var cat = $("cat_" + t.name.slice(2)); cat.hidden = t.value !== "YA";
+  if (t.value === "YA") cat.focus();
 }
 function previewImg(inp){
   var f = inp.files[0]; if (!f) return;
@@ -834,7 +1002,13 @@ function saveBorang(e){
   e.preventDefault();
   var btn = $("bp-save"); busy(btn, true, "Menghantar…");
   var file = $("bp-img").files[0];
-  api("saveBorangPelepasan", { formData:{ alamat:$("bp-alamat").value, noTelefon:$("bp-tel").value, penyakitBerat:$("bp-penyakit").value, ubatBerterusan:$("bp-ubat").value, alergi:$("bp-alergi").value, perakuanKesihatan:$("bp-pk").checked, perakuanActivityRisk:$("bp-pr").checked } })
+  var b1 = {};
+  b1Items(S.detail).forEach(function(q){
+    if (q.h) return;
+    var r = document.querySelector("input[name='q_" + q.id + "']:checked");
+    b1[q.id] = { status: r ? r.value : "TIDAK", catatan: $("cat_" + q.id).value.trim() };
+  });
+  api("saveBorangPelepasan", { formData:{ b1:b1, perakuanKesihatan:$("bp-pk").checked, perakuanLepasTanggung:$("bp-pr").checked, program:$("c1-prog").value, tarikh:$("c1-tkh").value, institusi:$("c1-inst").value } })
     .then(function(){
       if (!file) return null;
       btn.innerHTML = "Memuat naik gambar…";
@@ -847,10 +1021,7 @@ function saveBorang(e){
   return false;
 }
 function saveRefleksiPel(btn){
-  busy(btn, true);
-  api("saveRefleksi", refVals()).then(function(){ toast("Refleksi disimpan ✓"); return api("getStudentDetail", {}); })
-    .then(function(d){ S.detail = d; renderMine(); })
-    .catch(function(e){ toast(e.message, true); busy(btn, false); });
+  saveRefleksiAll(btn, null).then(function(d){ S.detail = d; renderMine(); }).catch(function(){});
 }
 
 // ===================== MULA =====================
